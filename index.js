@@ -1,62 +1,21 @@
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize('employee_info','root', '13ulas43', {
-    host: 'localhost',
-    dialect: 'mysql'
-});
+const express = require('express')
+const app = express()
+app.use(express.json())
 
-const Employee = sequelize.define('employee', {
-    emp_id:{
-        type: Sequelize.DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    fname:{
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false    
-    },
-    mname:{
-        type: Sequelize.DataTypes.STRING
-    },
-    lname:{
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false    
-    },
-    bdate:{
-        type: Sequelize.DataTypes.DATE
-    }, 
-    datehired:{
-        type: Sequelize.DataTypes.DATE,
-        allowNull: false   
-    }, 
-    position:{
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false    
-    },
-    joblevel:{
-        type: Sequelize.DataTypes.INTEGER,
-        allowNull: false    
-    },
-    salary:{
-        type: Sequelize.DataTypes.FLOAT,
-        allowNull: false    
-    },
-    salarymode:{
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false    
-    },
-    area:{
-        type: Sequelize.DataTypes.STRING,
-        allowNull: false    
-    }
-},
-{
-    freezeTableName: true,
-    timestamps: false
-}
-);
+//ROUTER
+const apiRoutes = require('./routes')
+app.use('/api',apiRoutes)
 
-Employee.sync({alter: true}).then((data) => {
-    console.log("Table and model created successfully");
-}).catch((err) => {
-    console.log("Error syncing the table and model");
-});;
+//DATABASE
+const {sequelize, connectToDb} = require('./db')
+
+//TEST
+app.get('/', (req, res) => {
+    res.status(200).json({ message: "TEST OK"})
+})
+
+const PORT = 3000
+app.listen(PORT, async () => {
+    console.log(`Server listening at port ${PORT}`)
+    await connectToDb();
+})
