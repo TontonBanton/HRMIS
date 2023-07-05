@@ -1,21 +1,27 @@
 const express = require('express')
-const app = express()
-app.use(express.json())
+const http = require('http')
 
-//ROUTER
-const apiRoutes = require('./routes')
-app.use('/api',apiRoutes)
+async function start() {
+  const app = express()
 
-//DATABASE
-const {sequelize, connectToDb} = require('./db')
+  // Set default port
+  app.set('port', process.env.PORT || 3005)
 
-//TEST
-app.get('/', (req, res) => {
-    res.status(200).json({ message: "TEST OK"})
-})
+  // Init body-parser options (inbuilt with express)
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
 
-const PORT = 3000
-app.listen(PORT, async () => {
-    console.log(`Server listening at port ${PORT}`)
-    await connectToDb();
-})
+  // Add API endpoints
+  app.use('/api', require('./api'))
+
+  await require('./sql').init()
+
+  // Listen the server
+  http.createServer(app)
+    .listen(app.get('port'), () => {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`Evaluate External Data started on http://localhost:${ app.get('port') }`)
+      }
+    })
+}
+start()
