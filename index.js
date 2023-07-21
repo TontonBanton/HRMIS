@@ -1,21 +1,32 @@
 const express = require('express')
-const app = express()
-app.use(express.json())
+const http = require('http')
 
-//ROUTER
-const apiRoutes = require('./routes')
-app.use('/api',apiRoutes)
+async function start(){
+    const app = express()
+    app.set('port', process.env.PORT || 3005)
+    
+    //BODY-PARSER
+    app.use(express.json())
+    app.use(express.urlencoded({ extended:true }))
 
-//DATABASE
-const {sequelize, connectToDb} = require('./db')
+   //API ENDPOINTS
+    app.use('/api', require('./api'))
 
-//TEST
-app.get('/', (req, res) => {
-    res.status(200).json({ message: "TEST OK"})
-})
+    //DBASE
+    await require('./sql').init()
+    
+    //TEST
+    app.get('/', (req, res) => {
+        res.send({data: "Hello"})
+    })
+    
+    http.createServer(app)
+        .listen(app.get('port'), () => {
+            if (process.env.NODE_ENV !== 'production') {
+                console.log(`Startted on http://localhost:${ app.get('port')}`)
+            }
+        })
+    
+}
+start()
 
-const PORT = 3000
-app.listen(PORT, async () => {
-    console.log(`Server listening at port ${PORT}`)
-    await connectToDb();
-})
