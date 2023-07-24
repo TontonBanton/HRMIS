@@ -1,5 +1,3 @@
-console.log("--- SQL INDEX RUNNING ---")
-
 const { Sequelize } = require('sequelize')
 
 module.exports = {
@@ -7,9 +5,7 @@ module.exports = {
     Employee: null,
     EmployeePosition: null,
 
-    async init(){
-        console.log("--- SQL INIT RUNNING ---")
-        
+    async init(){ 
         this.sequelize = new Sequelize(
             'employee_info',
             'root',
@@ -22,29 +18,24 @@ module.exports = {
 
         try {
             await this.sequelize.authenticate()
-            console.log('Connection has been successful')
-            
+            console.log('Connection has been successful')      
             this.initModels()
-
         } catch (error) {
             console.log('Unable to connect to database', error)
         }
     },
 
     async initModels(){
-        console.log("--- SQL INITMODELS RUNNING ---")
-
         const Employee = require('./models/Employee')(this.sequelize)
         this.Employee = Employee
         this.sequelize.sync({ force: false })
-        console.log('Employee', this.Employee)
         
         await this.initData()
     },
 
     async initData(){
         const count = await this.Employee.count()
-        console.log('Employess:', count)
+        console.log('Employees:', count)
 
         if (!count) {
             const emp = await this.Employee.create(
@@ -54,6 +45,5 @@ module.exports = {
                 }
             )
         }
-
     }
-}
+} 

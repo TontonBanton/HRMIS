@@ -1,5 +1,3 @@
-console.log("--- MODEL EMPLOYEE RUNNING ---")
-
 const { DataTypes, Sequelize } = require('sequelize')
 
 module.exports = (sequelize) => {

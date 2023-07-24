@@ -9,16 +9,11 @@ async function start(){
     app.use(express.json())
     app.use(express.urlencoded({ extended:true }))
 
-   //API ENDPOINTS
-    app.use('/api', require('./api'))
-
     //DBASE
     await require('./sql').init()
-    
-    //TEST
-    app.get('/', (req, res) => {
-        res.send({data: "Hello"})
-    })
+
+    //API ENDPOINTS
+    app.use('/api', require('./api'))
     
     http.createServer(app)
         .listen(app.get('port'), () => {
